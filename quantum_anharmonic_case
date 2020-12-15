@@ -6,8 +6,7 @@ function one_matrix(g,K)
     rcx2 = size(x2);
     x2set = [];
     syms eqn(t) E x;
-    eqn(t) = (4*t*E*x^(t-1) + t*(t-1)*(t-2)*x^(t-3) -4*(t+1)*x^(t+1)) / (4*g*(t+2)); %==x^(t+3)
-
+    eqn(t) = (4*t*E*x^(t-1) + t*(t-1)*(t-2)*x^(t-3) -4*(t+1)*x^(t+1)) / (4*g*(t+2));
         color = colors(K-6);
         M = sym(zeros(K+1));
         for i = 0:K
