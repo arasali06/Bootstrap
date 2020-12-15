@@ -1,0 +1,81 @@
+function one_matrix(g,K)
+    colors = ['b','g','y'];
+    e = 1.385:0.00005:1.41;
+    x2 = 0.295:0.00005:0.315;
+    rce = size(e);
+    rcx2 = size(x2);
+    x2set = [];
+    syms eqn(t) E x;
+    eqn(t) = (4*t*E*x^(t-1) + t*(t-1)*(t-2)*x^(t-3) -4*(t+1)*x^(t+1)) / (4*g*(t+2)); %==x^(t+3)
+
+        color = colors(K-6);
+        M = sym(zeros(K+1));
+        for i = 0:K
+            for j = 0:K
+                k = i+j;
+                if rem(k,2)==1
+                    M(i+1,j+1) = 0;
+                elseif k == 2
+                    M(i+1,j+1) = x^2;
+                else
+                    M(i+1,j+1) = eqn(k-3);
+                end
+            end
+        end
+        M(1,1)=1;
+        for ii = 0:K
+            for jj = 0:K
+                k = ii+jj;
+                if rem(k,2) == 0
+                    while k >=4
+                        mm = M(k/2,k/2);
+                        rr = M(ii+1,jj+1);
+                        M(ii+1,jj+1) = subs(rr,x^(k-2),mm);
+                        k = k-2;
+                    end
+                end
+            end
+        end
+        r = M;
+        y = 1;
+        m = 1;
+        for s = 1:rce(2)
+            for f = 1:rcx2(2)
+                M = r;
+                M = subs(M,E,e(s));
+                M = subs(M,x^2,x2(f));
+                d = double(M);
+                ei = eig(d);
+                n = ei(ei<0);
+                if isempty(n) == 1
+                    x2set(1,y) = x2(f);
+                    eset(y) = e(s);
+                    y = y+1;
+                    break;
+                end
+            end
+            for ff = rcx2(2):-1:1
+                M = r;
+                M = subs(M,E,e(s));
+                M = subs(M,x^2,x2(ff));
+                d = double(M);
+                ei = eig(d);
+                n = ei(ei<0);
+                if isempty(n) == 1
+                    x2set(2,m) = x2(ff); 
+                    m = m+1;
+                    break;
+                end
+             end
+        end
+        xi = x2set(1,:);
+        xf = x2set(2,:);
+        xx = [xi fliplr(xf)];
+        ee = [eset fliplr(eset)];
+        fill(ee,xx,color,'EdgeColor',color,'LineWidth',1.4);
+        alpha(.2);
+        axis([1.35 1.44 0.292 0.312]);
+        hold on;
+        xlabel('E','FontSize',14);
+        ylabel('<x^2>','FontSize',14);
+end
