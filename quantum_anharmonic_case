@@ -1,13 +1,16 @@
 function one_matrix(g,K)
-    colors = ['b','g','y'];
-    e = 1.385:0.00005:1.41;
-    x2 = 0.295:0.00005:0.315;
+    colors = ['b','g','y']; %for graph
+    e = 1.385:0.00005:1.41; %energy test values
+    x2 = 0.295:0.00005:0.315; %x^2 test values
     rce = size(e);
     rcx2 = size(x2);
     x2set = [];
     syms eqn(t) E x;
-    eqn(t) = (4*t*E*x^(t-1) + t*(t-1)*(t-2)*x^(t-3) -4*(t+1)*x^(t+1)) / (4*g*(t+2));
-        color = colors(K-6);
+    eqn(t) = (4*t*E*x^(t-1) + t*(t-1)*(t-2)*x^(t-3) -4*(t+1)*x^(t+1)) / (4*g*(t+2)); %Hamiltonian eqn.
+    color = colors(K-6); %for graph
+        
+        %%%%% Creating (K+1)*(K+1) M matrix %%%%%%
+        
         M = sym(zeros(K+1));
         for i = 0:K
             for j = 0:K
@@ -21,11 +24,14 @@ function one_matrix(g,K)
                 end
             end
         end
-        M(1,1)=1;
+        M(1,1)=1; %x^0 = 1 
+        
+        %%%% Writing higher powers of x in terms of x^2
+        
         for ii = 0:K
             for jj = 0:K
                 k = ii+jj;
-                if rem(k,2) == 0
+                if rem(k,2) == 0 %x^even = 0
                     while k >=4
                         mm = M(k/2,k/2);
                         rr = M(ii+1,jj+1);
@@ -35,9 +41,13 @@ function one_matrix(g,K)
                 end
             end
         end
+        
         r = M;
         y = 1;
         m = 1;
+        
+        %%%% Filling M by putting test values and testing whether eigenvalues are non-negative or not w.r.t. giving test values%%%%%
+        
         for s = 1:rce(2)
             for f = 1:rcx2(2)
                 M = r;
@@ -67,9 +77,10 @@ function one_matrix(g,K)
                 end
              end
         end
-        xi = x2set(1,:);
+        
+        xi = x2set(1,:);  %set of test values for x^2 satisfy the constraint (for energy test values the set satisfying the constraint is eset)
         xf = x2set(2,:);
-        xx = [xi fliplr(xf)];
+        xx = [xi fliplr(xf)]; 
         ee = [eset fliplr(eset)];
         fill(ee,xx,color,'EdgeColor',color,'LineWidth',1.4);
         alpha(.2);
